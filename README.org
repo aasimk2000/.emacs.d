@@ -1,0 +1,4 @@
+#+TITLE: DotEmacs
+#+AUTHOR: Aasim Kandrikar
+
+This repository contains my Emacs configuration
