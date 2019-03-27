@@ -1,7 +1,207 @@
+#+TITLE: DotEmacs
+#+AUTHOR: Aasim Kandrikar
+* Bootstrap
+** Minimal UI
 #+BEGIN_SRC emacs-lisp
-(when window-system
-  (blink-cursor-mode 0)                           ; Disable the cursor blinking
-  (scroll-bar-mode 0)                             ; Disable the scroll bar
-  (tool-bar-mode 0)                               ; Disable the tool bar
-  (tooltip-mode 0))                               ; Disable the tooltips
+  (scroll-bar-mode -1)
+  (tool-bar-mode   -1)
+  (tooltip-mode    -1)
+#+END_SRC
+** Declutter emacs directory
+
+Load user custom config
+
+#+BEGIN_SRC emacs-lisp
+  (setq custom-file (concat user-emacs-directory "custom.el"))
+  (when (file-exists-p custom-file)
+    (load custom-file))
+#+END_SRC
+
+Place all backups in ~.emacs.d/backups/
+
+#+BEGIN_SRC emacs-lisp
+  ;; store all backup and autosave files in the tmp dir
+  (setq backup-directory-alist
+	`((".*" . ,temporary-file-directory)))
+  (setq auto-save-file-name-transforms
+	`((".*" ,temporary-file-directory t)))
+#+END_SRC
+
+** Font and Frame Size
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'default-frame-alist '(font . "menlo-12"))
+  (add-to-list 'default-frame-alist '(height . 58))
+  (add-to-list 'default-frame-alist '(width . 150))
+#+END_SRC
+** Disable splash screen
+#+BEGIN_SRC emacs-lisp
+  (setq inhibit-startup-screen t)
+#+END_SRC
+* Doom theme and modeline
+** Doom theme 
+#+BEGIN_SRC emacs-lisp
+  (use-package doom-themes
+    :ensure t
+    :init
+    (setq doom-themes-enable-bold t
+	  doom-themes-enable-italic t)
+    (load-theme 'doom-one-light t)
+    :config
+    (doom-themes-visual-bell-config)
+    (doom-themes-org-config))
+#+END_SRC
+** Modeline
+#+BEGIN_SRC emacs-lisp
+  (use-package all-the-icons
+    :ensure t)
+  (use-package doom-modeline
+    :ensure t
+    :defer t
+    :hook ((after-init . doom-modeline-init)
+	   (dashboard-mode . doom-modeline-set-project-modeline)))
+#+END_SRC
+* Evil
+** Evil mode
+#+BEGIN_SRC emacs-lisp
+  (use-package evil
+    :ensure t
+    :init
+    (setq evil-want-keybinding nil) ;; Required for evil-collection
+    (setq evil-want-C-u-scroll t)
+    :config
+    (evil-mode 1))
+#+END_SRC
+** Evil-escape
+#+BEGIN_SRC emacs-lisp
+  (use-package evil-escape
+    :ensure t
+    :init
+    (setq-default evil-escape-key-sequence "ht")
+    :config
+    (evil-escape-mode 1))
+#+END_SRC
+* Helm
+** use-package setup and keybindings
+#+BEGIN_SRC emacs-lisp
+  (use-package helm
+    :ensure t
+    :init
+    (setq helm-M-x-fuzzy-match t
+	  helm-mode-fuzzy-match t
+	  helm-buffers-fuzzy-matching t
+	  helm-recentf-fuzzy-match t
+	  helm-locate-fuzzy-match t
+	  helm-semantic-fuzzy-match t
+	  helm-imenu-fuzzy-match t
+	  helm-completion-in-region-fuzzy-match t
+	  helm-candidate-number-list 150
+	  helm-split-window-in-side-p t
+	  helm-move-to-line-cycle-in-source t
+	  helm-echo-input-in-header-line t
+	  helm-autoresize-max-height 0
+	  helm-ff-file-name-history-use-recentf t
+	  helm-ff-skip-boring-files t
+	  helm-autoresize-min-height 20
+	  helm-autoresize-max-height 40)
+    (push ".DS_Store" completion-ignored-extensions)
+    :config
+    (helm-autoresize-mode 1)
+    (helm-mode 1)
+    :bind (("M-x" . helm-M-x)
+    ("C-x b" . helm-buffers-list)
+    :map helm-map
+    ("<tab>" . helm-execute-persistent-action)
+    ("TAB" . helm-execute-persistent-action)
+    ("C-z" . helm-select-action)
+    ("C-j" . helm-next-line)
+    ("C-k" . helm-previous-line)
+    ("C-h" . helm-next-source)
+    ("C-S-h" . describe-key)
+    :map helm-find-files-map
+    ("S-<tab>" . helm-find-files-up-one-level)
+    ("<backtab>" . helm-find-files-up-one-level)))
+#+END_SRC
+** Make minibuffer look better
+#+BEGIN_SRC emacs-lisp
+  (defun spacemacs//helm-hide-minibuffer-maybe ()
+    "Hide minibuffer in Helm session if we use the header line as input field."
+    (when (with-helm-buffer helm-echo-input-in-header-line)
+      (let ((ov (make-overlay (point-min) (point-max) nil nil t)))
+	(overlay-put ov 'window (selected-window))
+	(overlay-put ov 'face
+		     (let ((bg-color (face-background 'default nil)))
+		       `(:background ,bg-color :foreground ,bg-color)))
+	(setq-local cursor-type nil))))
+
+  (add-hook 'helm-minibuffer-set-up-hook
+	    'spacemacs//helm-hide-minibuffer-maybe)
+#+END_SRC
+** Helm themes
+#+BEGIN_SRC emacs-lisp
+  (use-package helm-themes
+    :ensure t
+    :defer t)
+#+END_SRC
+* Which Key
+#+BEGIN_SRC emacs-lisp
+  (use-package which-key
+    :ensure t
+    :init
+    (setq which-key-separator " ")
+    (setq which-key-prefix-prefix "+")
+    :config
+    (which-key-mode 1))
+#+END_SRC
+* General Custom Key Bindings
+#+BEGIN_SRC emacs-lisp
+  (use-package general
+    :ensure t
+    :config (general-define-key
+    :states '(normal visual insert emacs)
+    :prefix "SPC"
+    :non-normal-prefix "M-SPC"
+    ;; "/"   '(counsel-rg :which-key "ripgrep") ; You'll need counsel package for this
+    "TAB" '(switch-to-prev-buffer :which-key "previous buffer")
+    "SPC" '(helm-M-x :which-key "M-x")
+    "ff"  '(helm-find-files :which-key "find files")
+    ;; Buffers
+    "bb"  '(helm-buffers-list :which-key "buffers list")
+    ;; Window
+    "wl"  '(windmove-right :which-key "move right")
+    "wh"  '(windmove-left :which-key "move left")
+    "wk"  '(windmove-up :which-key "move up")
+    "wj"  '(windmove-down :which-key "move bottom")
+    "w/"  '(split-window-right :which-key "split right")
+    "w-"  '(split-window-below :which-key "split bottom")
+    "wx"  '(delete-window :which-key "delete window")
+    ;; Quit/Restart
+    "qq" '(save-buffers-kill-emacs :which-key "save and quit")
+    "qQ" '(kill-emacs :which-key "kill emacs")
+    ;; Others
+    "at"  '(ansi-term :which-key "open terminal")
+  ))
+#+END_SRC
+* Org config
+#+BEGIN_SRC emacs-lisp
+  (use-package org
+    :ensure t
+    :config
+    (setq org-latex-create-formula-image-program 'dvisvgm)
+    (setq org-format-latex-options (plist-put org-format-latex-options :scale 1.5)))
+#+END_SRC
+** Org Bullets
+#+BEGIN_SRC emacs-lisp
+  (use-package org-bullets
+      :defer t
+      :ensure t
+      :init (add-hook 'org-mode-hook 'org-bullets-mode))
+#+END_SRC
+* PATH
+#+BEGIN_SRC emacs-lisp
+  (use-package exec-path-from-shell
+    :ensure t
+    :defer nil
+    :init
+    (when (memq window-system '(mac ns x))
+    (exec-path-from-shell-initialize)))
 #+END_SRC
