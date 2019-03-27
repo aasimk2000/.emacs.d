@@ -1,4 +1,7 @@
 .DS_Store
+.org-id-locations
+custom.el
+recentf
 elpa/
 bootstrap.el
 *~
