@@ -19,6 +19,8 @@
       frame-resize-pixelwise t)
 
 (tool-bar-mode -1)
+(scroll-bar-mode -1)
+(tooltip-mode -1)
 (column-number-mode +1)
 
 (setq scroll-margin 0
@@ -91,9 +93,7 @@
 				  replace))
   :config
   (general-create-definer ak/leader
-    :prefix "SPC")
-  (ak/leader 'normal 'override
-    "SPC" 'execute-extended-command))
+    :prefix "SPC"))
 
 (use-package which-key
   :diminish which-key-mode
@@ -103,6 +103,7 @@
 
 (ak/leader 'normal 'override
   "." '(find-file :wk "Find file")
-  "," '(switch-to-buffer :wk "Switch buffer"))
+  "," '(switch-to-buffer :wk "Switch buffer")
+  "SPC" '(execute-extended-command :wk "M-x"))
 
 (provide 'init)
