@@ -1,53 +1,29 @@
-;;; init.el -- My Emacs configuration
+;;; init.el -- My Emacs configuration -*- lexical-binding: t -*-
 
-(defvar bootstrap-version)
-(let ((bootstrap-file
-       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-      (bootstrap-version 5))
-  (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-        (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-         'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
-  (load bootstrap-file nil 'nomessage))
+;; Adjust garbage collection thresholds during startup, and thereafter
+(setq debug-on-error t)
+(let ((normal-gc-cons-threshold (* 20 1024 1024))
+      (init-gc-cons-threshold (* 128 1024 1024)))
+  (setq gc-cons-threshold init-gc-cons-threshold)
+  (add-hook 'emacs-startup-hook
+            (lambda () (setq gc-cons-threshold normal-gc-cons-threshold))))
 
-(straight-use-package 'use-package)
-(setq straight-use-package-by-default t)
+;; Bootstrap config
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+(add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 
-(setq ring-bell-function 'ignore
-      frame-resize-pixelwise t)
+(require 'init-straight)
+(require 'init-exec-path)
 
-(tool-bar-mode -1)
-(scroll-bar-mode -1)
-(tooltip-mode -1)
-(column-number-mode +1)
+(straight-use-package 'diminish)
 
-(setq scroll-margin 0
-      scroll-conservatively 10000
-      scroll-preserve-screen-position t
-      auto-window-vscroll nil)
-
-(setq inhibit-startup-screen t
-      initial-major-mode 'text-mode)
-
-(setq line-spacing 1)
-(set-frame-font "Menlo-12" t t)
-(add-to-list 'default-frame-alist '(height . 50))
-(add-to-list 'default-frame-alist '(width . 95))
+(require 'init-themes)
+(require 'init-scroll)
+(require 'init-gui-frames)
 
 (setq show-paren-delay 0)
 (show-paren-mode +1)
 
-(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
-
-(use-package exec-path-from-shell
-  :config (when (memq window-system '(mac ns x))
-	    (exec-path-from-shell-initialize)))
-
-(use-package diminish
-  :demand t)
 
 (global-auto-revert-mode +1)
 (setq auto-revert-interval 2
@@ -109,17 +85,6 @@
   "," '(switch-to-buffer :wk "Switch buffer")
   "SPC" '(execute-extended-command :wk "M-x"))
 
-(use-package doom-themes
-  :config
-  (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
-        doom-themes-enable-italic t) ; if nil, italics is universally disabled
-  (load-theme 'doom-one-light t)
-
-  ;; Enable flashing mode-line on errors
-  (doom-themes-visual-bell-config)
-
-  ;; Corrects (and improves) org-mode's native fontification.
-  (doom-themes-org-config))
 
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 (add-hook 'prog-mode-hook 'hl-line-mode)
