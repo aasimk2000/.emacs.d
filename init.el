@@ -1,19 +1,20 @@
 ;;; init.el -- My Emacs configuration
 
-;; Setup Packages
-(require 'package)
-(add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/"))
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
-(add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/"))
-(setq package-enable-at-startup nil)
-(package-initialize)
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 5))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
 
-;; Bootstrap `use-package`
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
-(eval-and-compile
-  (setq use-package-always-ensure t))
+(straight-use-package 'use-package)
+(setq straight-use-package-by-default t)
 
 (setq ring-bell-function 'ignore
       frame-resize-pixelwise t)
@@ -33,6 +34,8 @@
 
 (setq line-spacing 1)
 (set-frame-font "Menlo-12" t t)
+(add-to-list 'default-frame-alist '(height . 50))
+(add-to-list 'default-frame-alist '(width . 95))
 
 (setq show-paren-delay 0)
 (show-paren-mode +1)
@@ -89,8 +92,8 @@
 				  normal
 				  visual
 				  motion
-				  operator
-				  replace))
+				  replace
+				  operator))
   :config
   (general-create-definer ak/leader
     :prefix "SPC"))
@@ -106,4 +109,21 @@
   "," '(switch-to-buffer :wk "Switch buffer")
   "SPC" '(execute-extended-command :wk "M-x"))
 
+(use-package doom-themes
+  :config
+  (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+        doom-themes-enable-italic t) ; if nil, italics is universally disabled
+  (load-theme 'doom-one-light t)
+
+  ;; Enable flashing mode-line on errors
+  (doom-themes-visual-bell-config)
+
+  ;; Corrects (and improves) org-mode's native fontification.
+  (doom-themes-org-config))
+
+(add-hook 'prog-mode-hook 'display-line-numbers-mode)
+(add-hook 'prog-mode-hook 'hl-line-mode)
+(setq display-line-numbers-type 'relative)
+
 (provide 'init)
+
