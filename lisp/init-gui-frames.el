@@ -11,7 +11,6 @@
 (tool-bar-mode -1)
 (set-scroll-bar-mode nil)
 (tooltip-mode -1)
-(column-number-mode +1)
 
 (set-frame-font "Menlo-12" t t)
 (add-to-list 'default-frame-alist '(height . 50))
