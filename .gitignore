@@ -8,4 +8,5 @@ bootstrap.el
 .mc-lists.el
 .smex-items
 straight/
-.#*
+.[#]*
+[#]*[#]
