@@ -24,6 +24,14 @@
 (require 'init-general)
 
 (require 'init-editing-utils)
+(require 'init-flycheck)
+(require 'init-company)
+(require 'init-yasnippet)
+
+(require 'init-window)
+
+(require 'init-emacs-lisp)
+(require 'init-latex)
 
 (provide 'init)
 

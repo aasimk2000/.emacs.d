@@ -5,7 +5,7 @@
 
 (setq display-line-numbers-width 3)
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
-(setq display-linu-numbers-type 'relative)
+(setq display-line-numbers-type 'relative)
 
 (add-hook 'prog-mode-hook 'hl-line-mode)
 
