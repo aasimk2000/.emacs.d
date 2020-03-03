@@ -30,8 +30,11 @@
 
 (require 'init-window)
 
+(require 'init-lsp)
+
 (require 'init-emacs-lisp)
 (require 'init-latex)
+(require 'init-c)
 
 (provide 'init)
 
