@@ -1,7 +1,7 @@
 ;;; init-evil.el --- Vim keybindings in emacs
 
 (setq evil-want-C-u-scroll t
-	evil-want-keybinding nil)
+      evil-want-keybinding nil)
 
 (straight-use-package 'evil)
 (add-hook 'after-init-hook 'evil-mode)
