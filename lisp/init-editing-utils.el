@@ -11,12 +11,6 @@
 
 (add-hook 'after-init-hook 'show-paren-mode)
 
-(add-hook 'after-init-hook 'global-auto-revert-mode)
-(setq global-auto-revert-non-file-buffers t
-      auto-revert-verbose t
-      auto-revert-interval 2
-      auto-revert-check-vc-info t)
-
 (setq column-number-mode t)
 
 (setq blink-cursor-interval 0.4)

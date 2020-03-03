@@ -24,6 +24,7 @@
 (require 'init-general)
 
 (require 'init-editing-utils)
+(require 'init-backups)
 (require 'init-flycheck)
 (require 'init-company)
 (require 'init-yasnippet)
