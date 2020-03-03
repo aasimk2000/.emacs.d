@@ -15,7 +15,8 @@
 (straight-use-package 'which-key)
 (add-hook 'after-init-hook 'which-key-mode)
 (setq which-key-idle-delay 0.4)
-(diminish 'which-key-mode)
+(with-eval-after-load 'which-key
+  (diminish 'which-key-mode))
 
 (ak/leader 'normal 'override
   "." '(find-file :wk "Find file")

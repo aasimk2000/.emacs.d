@@ -5,7 +5,9 @@
 
 (straight-use-package 'evil)
 (add-hook 'after-init-hook 'evil-mode)
-(diminish 'undo-tree-mode)
+(with-eval-after-load 'undo-tree
+  (diminish 'undo-tree-mode))
+
 
 (straight-use-package 'evil-collection)
 (evil-collection-init)
